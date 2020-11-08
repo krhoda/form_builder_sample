@@ -1,25 +1,23 @@
 <template>
-  <Nav/>
+  <v-app>
+    <v-main>
+      <Container/>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import Nav from './components/Nav.vue'
+import Container from './components/Container';
 
 export default {
   name: 'App',
-  components: {
-    Nav
-  }
-}
-</script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  components: {
+    Container,
+  },
+
+  data: () => ({
+    //
+  }),
+};
+</script>
