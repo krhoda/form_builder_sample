@@ -130,14 +130,26 @@ export default {
     },
 
     createForm: function() {
-      fetch("http://localhost:8000/form", {
+      fetch("http://localhost:8000/create-form", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ schema: this.schema }),
       })
-      .then((res) => {return res.json()})
+      .then((res) => {
+        if (res.ok && res.status === 200) {
+          return res.json()
+        } 
+
+        alert(`Bad result in Form Submit, non-200 status code: ${res.status}`);
+        return false;
+      })
       .then((json) => {
-        this.shareID = json.form_id;
+        if (json) {
+          this.shareID = json.form_id;
+        }
+      })
+      .catch((err) => {
+        alert(`Bad result in Form Submit: ${err}`);
       })
     },
 
