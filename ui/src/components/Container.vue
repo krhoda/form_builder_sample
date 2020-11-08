@@ -23,7 +23,7 @@
         </div>
 
         <div v-if="currentNav === 'builder'">
-          <p>Will be a form builder</p>
+          <FormBuilder/>
         </div>
 
         <div v-if="currentNav === 'file-search'">
@@ -39,9 +39,12 @@
 </template>
 
 <script>
+import FormBuilder from "./FormBuilder";
 export default {
   name: "Container",
-  components: {},
+  components: {
+    FormBuilder,
+  },
 
   data: () => ({
     // host: window.location.host,
@@ -50,11 +53,7 @@ export default {
 
   methods: {
     updateNav: function(next) {
-      console.log("BEFORE");
-      console.log(this.currentNav);
       this.currentNav = next;
-      console.log("AFTER");
-      console.log(this.currentNav);
     },
   },
 };
