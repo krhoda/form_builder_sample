@@ -7,7 +7,6 @@
           To view it now:
           <a
             target="_blank"
-            :href="`http://${window.location.host}/form/${shareID}`"
             >click here</a
           >
         </v-card-text>
@@ -26,7 +25,7 @@
         <v-card-text>
           <p>Set the label, set the type, add it to the form!</p>
           <v-text-field label="Field's Label" v-model="label" />
-          <v-radio-group v-model="inputType">
+          <v-radio-group v-model="input_type">
             <template v-slot:label>
               <div>Set the type</div>
             </template>
@@ -58,7 +57,7 @@
           </div>
           <div v-for="entry in schema" v-bind:key="`field-${entry.label}`">
             <v-text-field
-              v-if="entry.inputType === 'text'"
+              v-if="entry.input_type === 'text'"
               prepend-icon="mdi-format-text"
               :label="entry.label"
             ></v-text-field>
@@ -78,7 +77,7 @@
           {{ JSON.stringify(schema) }}
         </v-card-text>
         <v-card-actions>
-          <v-btn color="success">
+          <v-btn color="success" v-on:click="createForm">
             Save Form & Generate Link
           </v-btn>
         </v-card-actions>
@@ -95,14 +94,14 @@ export default {
     return {
       schema: {},
       label: "",
-      inputType: "",
+      input_type: "",
       shareID: "",
     };
   },
 
   methods: {
     addToSchema: function() {
-      let valid = this.inputType !== "" && this.label !== "";
+      let valid = this.input_type !== "" && this.label !== "";
 
       if (!valid) {
         alert("Label and type are required!");
@@ -116,11 +115,11 @@ export default {
       }
 
       this.schema[this.label] = {
-        inputType: this.inputType,
+        input_type: this.input_type,
         label: this.label,
       };
 
-      this.inputType = "";
+      this.input_type = "";
       this.label = "";
     },
 
@@ -130,10 +129,22 @@ export default {
       this.schema = nextSchema;
     },
 
+    createForm: function() {
+      fetch("http://localhost:8000/form", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ schema: this.schema }),
+      })
+      .then((res) => {return res.json()})
+      .then((json) => {
+        this.shareID = json.form_id;
+      })
+    },
+
     backToForm: function() {
       this.schema = {};
-      this.shareID = {};
-      this.inputType = "";
+      this.shareID = "";
+      this.input_type = "";
       this.label = "";
     },
   },
