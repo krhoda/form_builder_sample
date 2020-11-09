@@ -5,10 +5,7 @@
         <v-card-title>The form ID is: {{ shareID }}</v-card-title>
         <v-card-text>
           To view it now:
-          <a
-            target="_blank"
-            >click here</a
-          >
+          <a target="_blank">click here</a>
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" v-on:click="backToForm"
@@ -23,6 +20,8 @@
           Form Builder
         </v-card-title>
         <v-card-text>
+          <p>Set the form's name</p>
+          <v-text-field label="Form Name" v-model="schemaName" />
           <p>Set the label, set the type, add it to the form!</p>
           <v-text-field label="Field's Label" v-model="label" />
           <v-radio-group v-model="input_type">
@@ -50,7 +49,10 @@
         </v-card-actions>
       </v-card>
       <v-card elevation="2" class="mt-10">
-        <v-card-title>The form will look like:</v-card-title>
+        <v-card-title
+          >The form titled "{{ schemaName }}" will have the following
+          inputs:</v-card-title
+        >
         <v-card-text>
           <div v-if="Object.keys(schema).length === 0">
             None.
@@ -92,6 +94,7 @@ export default {
 
   data: () => {
     return {
+      schemaName: "",
       schema: {},
       label: "",
       input_type: "",
@@ -130,31 +133,46 @@ export default {
     },
 
     createForm: function() {
-      fetch("http://localhost:8000/create-form", {
+      if (Object.keys(this.schema).length <= 0) {
+        alert("At least one field is required to save!");
+        return;
+      }
+
+      if (this.schemaName === "") {
+        alert("A form must have a name to save");
+        return;
+      }
+
+      fetch(`http://${window.location.host}/create-form`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ schema: this.schema }),
+        body: JSON.stringify({
+          contents: { schema: this.schema, schema_name: this.schemaName },
+        }),
       })
-      .then((res) => {
-        if (res.ok && res.status === 200) {
-          return res.json()
-        } 
+        .then((res) => {
+          if (res.ok && res.status === 200) {
+            return res.json();
+          }
 
-        alert(`Bad result in Form Submit, non-200 status code: ${res.status}`);
-        return false;
-      })
-      .then((json) => {
-        if (json) {
-          this.shareID = json.form_id;
-        }
-      })
-      .catch((err) => {
-        alert(`Bad result in Form Submit: ${err}`);
-      })
+          alert(
+            `Bad result in Form Submit, non-200 status code: ${res.status}`
+          );
+          return false;
+        })
+        .then((json) => {
+          if (json) {
+            this.shareID = json.form_id;
+          }
+        })
+        .catch((err) => {
+          alert(`Bad result in Form Submit: ${err}`);
+        });
     },
 
     backToForm: function() {
       this.schema = {};
+      this.schemaName = "";
       this.shareID = "";
       this.input_type = "";
       this.label = "";

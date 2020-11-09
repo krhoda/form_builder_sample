@@ -8,11 +8,11 @@
           </v-btn>
 
           <v-btn elevation="2" v-on:click="updateNav('file-search')">
-            Form Finder
+            Form Table
           </v-btn>
 
           <v-btn elevation="2" v-on:click="updateNav('submission-search')">
-            Submission Search
+            Submission Table
           </v-btn>
         </v-row>
       </v-col>
@@ -27,11 +27,11 @@
         </div>
 
         <div v-if="currentNav === 'file-search'">
-          <p>Will be a form finder</p>
+          <FormSearch />
         </div>
 
         <div v-if="currentNav === 'submission-search'">
-          <p>Will be a submission search</p>
+          <SubmissionSearch />
         </div>
       </v-col>
     </v-row>
@@ -40,10 +40,15 @@
 
 <script>
 import FormBuilder from "./FormBuilder";
+import FormSearch from "./FormSearch";
+import SubmissionSearch from "./SubmissionSearch";
+
 export default {
   name: "Container",
   components: {
     FormBuilder,
+    FormSearch,
+    SubmissionSearch,
   },
 
   data: () => ({

@@ -4,6 +4,9 @@
       <div v-if="targetForm">
         <FormViewer />
       </div>
+      <div v-else-if="formID && submissionID">
+        <SubmissionViewer />
+      </div>
       <div v-else>
         <Container />
       </div>
@@ -14,6 +17,7 @@
 <script>
 import Container from "./components/Container";
 import FormViewer from "./components/FormViewer";
+import SubmissionViewer from "./components/SubmissionViewer";
 
 export default {
   name: "App",
@@ -21,18 +25,30 @@ export default {
   components: {
     Container,
     FormViewer,
+    SubmissionViewer,
   },
 
   created: function() {
     const params = new URLSearchParams(window.location.search);
-    const target = params.get("form");
-    if (target) {
-      this.targetForm = target;
+    const targetForm = params.get("form");
+    if (targetForm) {
+      this.targetForm = targetForm;
+      return;
+    }
+
+    const formID = params.get("formID");
+    const submissionID = params.get("submissionID");
+    if (formID && submissionID) {
+      this.submissionID = submissionID;
+      this.formID = formID;
+      return;
     }
   },
 
   data: () => ({
     targetForm: "",
+    formID: "",
+    submissionID: ""
   }),
 };
 </script>

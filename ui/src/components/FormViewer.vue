@@ -16,6 +16,7 @@
     </div>
     <div v-else>
       <v-card elevation="2">
+        <v-card-title>{{ schemaName }}</v-card-title>
         <v-card-text>
           {{ message }}
           <div v-for="entry in schema" v-bind:key="`field-${entry.label}`">
@@ -48,11 +49,13 @@ export default {
   created: function() {
     const params = new URLSearchParams(window.location.search);
     const target = params.get("form");
-    if (target) {
-      this.targetForm = target;
+    if (!target) {
+      this.message = "Could not find target form in query parameters";
+      return;
     }
 
-    fetch("http://localhost:8000/fetch-form", {
+    this.targetForm = target;
+    fetch(`http://${window.location.host}/fetch-form`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ form_id: this.targetForm }),
@@ -66,18 +69,19 @@ export default {
         return false;
       })
       .then((json) => {
-        if (json && json.schema) {
-          let keys = Object.keys(json.schema);
+        if (json && json.contents) {
+          let keys = Object.keys(json.contents.schema);
           let finalSchema = {};
 
           for (let i = 0, x = keys.length; i < x; i++) {
             let key = keys[i];
-            let value = json.schema[key];
+            let value = json.contents.schema[key];
             let next = Object.assign({ value: "" }, value);
             finalSchema[key] = next;
           }
 
           this.schema = finalSchema;
+          this.schemaName = json.contents.schema_name;
           this.ready = true;
           this.message = "";
         }
@@ -90,6 +94,7 @@ export default {
   data: () => ({
     targetForm: "",
     schema: {},
+    schemaName: "",
     message: "Loading...",
     ready: false,
     submissionID: "",
@@ -97,7 +102,7 @@ export default {
 
   methods: {
     submitForm: function() {
-      fetch("http://localhost:8000/submit", {
+      fetch(`http://${window.location.host}/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ submission: this.schema, form_id: this.targetForm }),
