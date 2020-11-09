@@ -16,49 +16,16 @@ use std::fs::{read_to_string, File};
 use std::path::{Path, PathBuf};
 use uuid::Uuid;
 
+mod structs;
+use structs::{
+    CreateSubmissionReq, CreateSubmissionRes, FetchFormReq, FetchSubmissionReq, FetchSubmissionRes,
+    ListFormEntry, ListFormsRes, ListSubmisionsRes, ListSubmissionsEntry, NewFormRes, Schema,
+    SchemaContents, SubmissionContents,
+};
+
 // UI / Form locations:
 const SCHEMA_DIR: &str = "schema";
 const SUBMISSION_DIR: &str = "submission";
-
-// CORS helper for easier dev.
-fn make_cors() -> Result<rocket_cors::Cors, rocket_cors::Error> {
-    let allowed_origins = AllowedOrigins::all();
-
-    rocket_cors::CorsOptions {
-        allowed_origins,
-        allowed_methods: vec![Method::Delete, Method::Get, Method::Post, Method::Options]
-            .into_iter()
-            .map(From::from)
-            .collect(),
-        allowed_headers: AllowedHeaders::all(),
-        allow_credentials: true,
-        ..Default::default()
-    }
-    .to_cors()
-}
-
-// Create form structs and route.
-#[derive(Serialize, Deserialize)]
-struct Schema {
-    contents: SchemaContents,
-}
-
-#[derive(Serialize, Deserialize)]
-struct SchemaContents {
-    schema_name: String,
-    schema: HashMap<String, SchemaEntry>,
-}
-
-#[derive(Serialize, Deserialize)]
-struct SchemaEntry {
-    label: String,
-    input_type: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct NewFormRes {
-    form_id: String,
-}
 
 #[post("/create-form", format = "application/json", data = "<new_schema>")]
 fn create_form(new_schema: Json<Schema>) -> Result<JsonValue, std::io::Error> {
@@ -78,12 +45,6 @@ fn create_form(new_schema: Json<Schema>) -> Result<JsonValue, std::io::Error> {
     Ok(json!(res))
 }
 
-// Show form structs and route
-#[derive(Serialize, Deserialize)]
-struct FetchFormReq {
-    form_id: String,
-}
-
 #[post("/fetch-form", format = "application/json", data = "<fetch_form_req>")]
 fn fetch_form(fetch_form_req: Json<FetchFormReq>) -> Result<JsonValue, std::io::Error> {
     let file_name = format!("{}.json", fetch_form_req.0.form_id);
@@ -94,25 +55,6 @@ fn fetch_form(fetch_form_req: Json<FetchFormReq>) -> Result<JsonValue, std::io::
     let res = Schema { contents: contents };
 
     Ok(json!(res))
-}
-
-// Form submission structs and route
-#[derive(Serialize, Deserialize)]
-struct CreateSubmissionReq {
-    form_id: String,
-    submission: HashMap<String, SubmissionEntry>,
-}
-
-#[derive(Serialize, Deserialize)]
-struct SubmissionEntry {
-    label: String,
-    input_type: String,
-    value: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct CreateSubmissionRes {
-    submission_id: String,
 }
 
 #[post("/submit", format = "application/json", data = "<sub_req>")]
@@ -137,24 +79,6 @@ fn submit(sub_req: Json<CreateSubmissionReq>) -> Result<JsonValue, std::io::Erro
     };
 
     Ok(json!(res))
-}
-
-// Show submission structs and route
-#[derive(Serialize, Deserialize)]
-struct FetchSubmissionReq {
-    form_id: String,
-    submission_id: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct FetchSubmissionRes {
-    contents: SubmissionContents,
-}
-
-#[derive(Serialize, Deserialize)]
-struct SubmissionContents {
-    schema_name: String,
-    submission: HashMap<String, SubmissionEntry>,
 }
 
 #[post(
@@ -189,18 +113,6 @@ fn fetch_submission(
     Ok(json!(res))
 }
 
-// List Forms structs and route
-#[derive(Serialize, Deserialize)]
-struct ListFormsRes {
-    form_list: Vec<ListFormEntry>,
-}
-
-#[derive(Serialize, Deserialize)]
-struct ListFormEntry {
-    form_id: String,
-    form_name: String,
-}
-
 #[get("/list-forms")]
 fn list_forms() -> Result<JsonValue, std::io::Error> {
     let mut res = ListFormsRes {
@@ -227,19 +139,6 @@ fn list_forms() -> Result<JsonValue, std::io::Error> {
     }
 
     Ok(json!(res))
-}
-
-// List Submissions structs and route
-#[derive(Serialize, Deserialize)]
-struct ListSubmisionsRes {
-    submission_list: Vec<ListSubmissionsEntry>,
-}
-
-#[derive(Serialize, Deserialize)]
-struct ListSubmissionsEntry {
-    submission_id: String,
-    form_id: String,
-    form_name: String,
 }
 
 #[get("/list-submissions")]
@@ -272,7 +171,7 @@ fn list_submissions() -> Result<JsonValue, std::io::Error> {
         let form_id = entry_str.trim_start_matches("submission/");
         let form_name = match name_map.get(&form_id.to_string()) {
             Some(x) => x,
-            None => "Missing Form"
+            None => "Missing Form",
         };
 
         for f in std::fs::read_dir(entry.path())? {
@@ -308,6 +207,23 @@ fn show_form() -> Option<NamedFile> {
 fn files(file: PathBuf) -> Option<NamedFile> {
     let app_dir = Path::new("ui").join("dist");
     NamedFile::open(app_dir.join(file)).ok()
+}
+
+// CORS helper for easier dev.
+fn make_cors() -> Result<rocket_cors::Cors, rocket_cors::Error> {
+    let allowed_origins = AllowedOrigins::all();
+
+    rocket_cors::CorsOptions {
+        allowed_origins,
+        allowed_methods: vec![Method::Delete, Method::Get, Method::Post, Method::Options]
+            .into_iter()
+            .map(From::from)
+            .collect(),
+        allowed_headers: AllowedHeaders::all(),
+        allow_credentials: true,
+        ..Default::default()
+    }
+    .to_cors()
 }
 
 fn main() {
