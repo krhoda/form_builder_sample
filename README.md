@@ -11,7 +11,7 @@ This script moves to the `server` directory, sets the current directory (`form_b
 The server will start at `localhost:8000` where you can visit to see the Vue UI.
 There are three options along the nav bar, `Form Builder`, `Form Table`, and `Submission Table`.
 
-Visiting the second or third option will initially just show an empty table.
+Visiting the second or third option will initially just show a sample form and a sample submission to that form.
 
 Visiting `Form Builder` will take you to a form which allows you to set the title of the form and add string or number inputs. Inputs require a label, and the form itself requires a title. Inputs can also be removed. No two inputs can have the same label.
 
