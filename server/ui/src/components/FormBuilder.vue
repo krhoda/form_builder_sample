@@ -7,8 +7,8 @@
           To view it now:
           <a
             target="_blank"
-            :href="`http://${window.location.host}/?form=${shareID}`"
-            >{{ `http://${window.location.host}/?form=${shareID}` }}</a
+            :href="`http://${host}/?form=${shareID}`"
+            >{{ `http://${host}/?form=${shareID}` }}</a
           >
         </v-card-text>
         <v-card-actions>
@@ -97,6 +97,7 @@ export default {
 
   data: () => {
     return {
+      host: window.location.host,
       schemaName: "",
       schema: {},
       label: "",
@@ -164,6 +165,8 @@ export default {
           return false;
         })
         .then((json) => {
+          console.log("!!!");
+          console.log(json);
           if (json) {
             this.shareID = json.form_id;
           }
