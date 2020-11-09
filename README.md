@@ -1,11 +1,12 @@
 ## Form Builder Demo:
 The Vue based UI is already built, and ready to be served through the Rocket Server
+
 To run the server, first have `cargo` and `rustup` installed, then:
 ```
 $ cd form_builder_example
 $ ./run.sh
 ```
-This script moves to the `server` directory, sets the current directory (`spruce_example/server`) to be using the nightly build of Rust, what Rocket.rs requires, then simply runs `cargo run`.
+This script moves to the `server` directory, sets the current directory (`form_builder_example/server`) to be using the nightly build of Rust, what Rocket.rs requires, then simply runs `cargo run`.
 
 The server will start at `localhost:8000` where you can visit to see the Vue UI.
 There are three options along the nav bar, `Form Builder`, `Form Table`, and `Submission Table`.
