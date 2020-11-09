@@ -35,7 +35,6 @@
             ></v-text-field>
           </div>
           <v-btn color="success" v-on:click="submitForm">Submit Form</v-btn>
-          {{ schema }}
         </v-card-text>
       </v-card>
     </div>
