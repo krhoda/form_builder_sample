@@ -5,7 +5,11 @@
         <v-card-title>The form ID is: {{ shareID }}</v-card-title>
         <v-card-text>
           To view it now:
-          <a target="_blank">click here</a>
+          <a
+            target="_blank"
+            :href="`http://${window.location.host}/?form=${shareID}`"
+            >{{ `http://${window.location.host}/?form=${shareID}` }}</a
+          >
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" v-on:click="backToForm"
@@ -76,7 +80,6 @@
               >Remove {{ entry.label }}</v-btn
             >
           </div>
-          {{ JSON.stringify(schema) }}
         </v-card-text>
         <v-card-actions>
           <v-btn color="success" v-on:click="createForm">

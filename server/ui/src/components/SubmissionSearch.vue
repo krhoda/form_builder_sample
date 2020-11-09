@@ -27,10 +27,24 @@
                   <strong>{{ submission.form_name }}</strong>
                 </td>
                 <td>
-                  <strong>{{ submission.form_id }}</strong>
+                  <a
+                    target="_blank"
+                    :href="
+                      `http://${host}/?form=${submission.form_id}`
+                    "
+                  >
+                    <strong>{{ submission.form_id }}</strong>
+                  </a>
                 </td>
                 <td>
-                  <strong>{{ submission.submission_id }}</strong>
+                  <a
+                    target="_blank"
+                    :href="
+                      `http://${host}/?formID=${submission.form_id}&submissionID=${submission.submission_id}`
+                    "
+                  >
+                    <strong>{{ submission.submission_id }}</strong>
+                  </a>
                 </td>
               </tr>
             </tbody>
@@ -69,6 +83,7 @@ export default {
 
   data: () => ({
     message: "Loading...",
+    host: window.location.host,
     ready: false,
     submissionList: false,
   }),

@@ -21,7 +21,14 @@
                   {{ form.form_name }}
                 </td>
                 <td>
-                  {{ form.form_id }}
+                  <a
+                    target="_blank"
+                    :href="
+                      `http://${host}/?form=${form.form_id}`
+                    "
+                  >
+                    {{ form.form_id }}
+                  </a>
                 </td>
               </tr>
             </tbody>
@@ -61,6 +68,7 @@ export default {
 
   data: () => ({
     message: "Loading...",
+    host: window.location.host,
     ready: false,
     formList: false,
   }),

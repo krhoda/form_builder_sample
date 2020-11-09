@@ -17,7 +17,6 @@ use std::path::{Path, PathBuf};
 use uuid::Uuid;
 
 // UI / Form locations:
-const APP_DIR: &str = "public";
 const SCHEMA_DIR: &str = "schema";
 const SUBMISSION_DIR: &str = "submission";
 
@@ -283,6 +282,7 @@ fn list_submissions() -> Result<JsonValue, std::io::Error> {
             f_str.truncate(f_len - 5);
 
             let prefix = entry.path().into_os_string().into_string().unwrap();
+            let prefix = format!("{}/", prefix);
             let submission_id = f_str.trim_start_matches(&prefix);
             let sub_entry = ListSubmissionsEntry {
                 submission_id: submission_id.to_string(),
@@ -300,12 +300,14 @@ fn list_submissions() -> Result<JsonValue, std::io::Error> {
 // UI App serving routes
 #[get("/")]
 fn show_form() -> Option<NamedFile> {
-    NamedFile::open(Path::new(APP_DIR).join("index.html")).ok()
+    let app_dir = Path::new("ui").join("dist");
+    NamedFile::open(app_dir.join("index.html")).ok()
 }
 
 #[get("/<file..>")]
 fn files(file: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new(APP_DIR).join(file)).ok()
+    let app_dir = Path::new("ui").join("dist");
+    NamedFile::open(app_dir.join(file)).ok()
 }
 
 fn main() {
